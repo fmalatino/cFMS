@@ -1,7 +1,7 @@
 function CFMS_DIAG_AXIS_INIT_(name, naxis_data, axis_data, units, cart_name, domain_id,    &
      long_name, direction, set_name, edges, aux, req, tile_count, domain_position, not_xy) &
      bind(C, name=CFMS_DIAG_AXIS_INIT_BINDC_)
-    
+
     implicit none
     character(c_char), intent(in) :: name(NAME_LENGTH)
     integer,           intent(in) :: naxis_data
@@ -20,15 +20,15 @@ function CFMS_DIAG_AXIS_INIT_(name, naxis_data, axis_data, units, cart_name, dom
     logical(c_bool),   intent(in), optional :: not_xy
 
     type(FmsMppDomain2D), pointer :: domain
-    
+
     character(NAME_LENGTH-1) :: name_f
     character(NAME_LENGTH-1) :: units_f
     character(NAME_LENGTH-1) :: cart_name_f
     character(NAME_LENGTH-1) :: set_name_f
     character(NAME_LENGTH-1) :: long_name_f
     character(NAME_LENGTH-1) :: aux_f
-    character(NAME_LENGTH-1) :: req_f    
-    
+    character(NAME_LENGTH-1) :: req_f
+
     integer :: CFMS_DIAG_AXIS_INIT_
 
     logical :: not_xy_f
@@ -36,7 +36,7 @@ function CFMS_DIAG_AXIS_INIT_(name, naxis_data, axis_data, units, cart_name, dom
     set_name_f = ""
     aux_f = "none"
     req_f = "none"
-    
+
     name_f      = fms_string_utils_c2f_string(name)
     units_f     = fms_string_utils_c2f_string(units)
     cart_name_f = fms_string_utils_c2f_string(cart_name)
@@ -66,7 +66,7 @@ function CFMS_DIAG_AXIS_INIT_(name, naxis_data, axis_data, units, cart_name, dom
                                               tile_count = tile_count, &
                                               domain_position = domain_position)
     nullify(domain)
-    
+
   end function CFMS_DIAG_AXIS_INIT_
 
 

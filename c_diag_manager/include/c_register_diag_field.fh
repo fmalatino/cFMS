@@ -14,7 +14,7 @@
 #include "c_register_diag_field.inc"
 
 
-! cfloats  
+! cfloats
 #undef  CFMS_REGISTER_DIAG_FIELD_SCALAR_
 #undef  CFMS_REGISTER_DIAG_FIELD_SCALAR_BINDC_
 #undef  CFMS_REGISTER_DIAG_FIELD_SCALAR_TYPE_
@@ -28,7 +28,7 @@
 #define CFMS_REGISTER_DIAG_FIELD_ARRAY_BINDC_ "cFMS_register_diag_field_array_cfloat"
 #define CFMS_REGISTER_DIAG_FIELD_ARRAY_TYPE_   real(c_float)
 #include "c_register_diag_field.inc"
-  
+
 
 ! cdoubles
 #undef  CFMS_REGISTER_DIAG_FIELD_SCALAR_

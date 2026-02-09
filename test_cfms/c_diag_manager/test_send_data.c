@@ -11,12 +11,13 @@
 
 //TODO:  add reading in the outputted file for correctness
 //Currently, answers have been checked separately/manually for correctness
-int main() 
+int main()
 {
-  
+
+  printf("test started\n");
   int domain_id = -99;
   int id_x, id_y, id_z;
-  
+
   int id_var3;
   int var3_shape[3] = {NX, NY, NZ};
   float *var3;
@@ -26,9 +27,9 @@ int main()
   float *var2;
 
   int calendar_type = NOLEAP;
-    
+
   var3 = (float *)malloc(NX*NY*NZ*sizeof(float));
-  int ijk = 0;  
+  int ijk = 0;
   for(int i=0; i<NX; i++) {
     for(int j=0; j<NY; j++) {
       for(int k=0; k<NZ; k++) {
@@ -38,49 +39,55 @@ int main()
   }
 
   var2 = (float *)malloc(NX*NY*sizeof(float));
-  int ij = 0;  
+  int ij = 0;
   for(int i=0; i<NX; i++) {
     for(int j=0; j<NY; j++) {
       var2[ij++] = i*10. + j*1.;
     }
-  }    
-  
+  }
+  printf("data allocated and set\n");
+
   cFMS_init(NULL, NULL, NULL, NULL, &calendar_type);
+  printf("cfms initialized\n");
+  int* npes = (int*) malloc(sizeof(int));
+  *npes = cFMS_npes();
 
   // define domain
+  // TODO helper routines seem to be crashing; instead we'll create the domain directly
   {
-    cDomainStruct cdomain;
+    //cDomainStruct cdomain;
     int global_indices[4] = {0, NX-1, 0, NY-1};
-    int layout[2] = {1,1};
+    int layout[2] = {1,*npes};
     int io_layout[2] = {1,1};
-    cFMS_null_cdomain(&cdomain);  
-    cdomain.global_indices = global_indices;
-    cdomain.layout = layout;
-    domain_id = cFMS_define_domains_easy(cdomain);
+    //cFMS_null_cdomain(&cdomain);
+    //cdomain.global_indices = global_indices;
+    //cdomain.layout = layout;
+    //cdomain.npes = (int*) malloc(sizeof(int));
+    //domain_id = cFMS_define_domains_easy(cdomain);
+    domain_id = cFMS_define_domains(global_indices, layout, npes,
+      NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+      NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
     cFMS_define_io_domain(io_layout,&domain_id);
+   //function cFMS_define_domains(global_indices, layout, npes, pelist,            &
+   //   xflags, yflags, xhalo, yhalo, xextent, yextent, maskmap, name,           &
+   //   symmetry, memory_size, whalo, ehalo, shalo, nhalo, is_mosaic, tile_count,&
+   //   tile_id, complete, x_cyclic_offset, y_cyclic_offset) bind(C, name="cFMS_define_domains")
   }
-  
+  cFMS_set_current_domain(&domain_id);
+
+  printf("domain defined\n");
+
   // diag manager init
+  int time_init[7] = {2, 1, 1, 1, 1, 1, 0}; // 1/1/2 01:01:01
   {
     int  diag_model_subset = DIAG_ALL;
-    int *time_init = NULL;
     char err_msg[NAME_LENGTH] = "None";
     cFMS_diag_init(&diag_model_subset, time_init, err_msg);
-
-    //test module_is_initialized
-    cFMS_diag_init(&diag_model_subset, time_init, err_msg);
   }
+  printf("diag manager initialized");
 
-  bool module_is_initialized = c_diag_manager_is_initialized();
-  if(!module_is_initialized){
-    cFMS_error(FATAL, "module is not initialized");
-    exit(EXIT_FAILURE);
-  }
-  
-  cFMS_set_current_domain(&domain_id);
-  
   //diag axis init x
-  {    
+  {
     char name[NAME_LENGTH] = "x";
     int naxis_data = NX;
     double x[NX];
@@ -96,13 +103,13 @@ int main()
     int *domain_position = NULL;
 
     for(int i=0; i<NX; i++) x[i] = i;
-    
-    id_x = cFMS_diag_axis_init_cdouble(name, &naxis_data, x, units, cart_name, &domain_id, long_name, direction, 
+
+    id_x = cFMS_diag_axis_init_cdouble(name, &naxis_data, x, units, cart_name, &domain_id, long_name, direction,
                                        set_name, edges, aux, req, tile_count, domain_position, NULL);
   }
 
   //diag axis init y
-  {    
+  {
     char name[NAME_LENGTH] = "y";
     int naxis_data = NY;
     double y[NY];
@@ -118,13 +125,13 @@ int main()
     int *domain_position = NULL;
 
     for(int j=0; j<NY; j++) y[j] = j;
-    
-    id_y = cFMS_diag_axis_init_cdouble(name, &naxis_data, y, units, cart_name, &domain_id, long_name, direction, 
+
+    id_y = cFMS_diag_axis_init_cdouble(name, &naxis_data, y, units, cart_name, &domain_id, long_name, direction,
                                        set_name, edges, aux, req, tile_count, domain_position, NULL);
   }
 
   //diag axis init z
-  {    
+  {
     char name[NAME_LENGTH] = "z";
     int naxis_data = NZ;
     double z[NZ];
@@ -141,11 +148,11 @@ int main()
     bool not_xy = true;
 
     for(int k=0; k<NZ; k++) z[k] = k;
-    
-    id_z = cFMS_diag_axis_init_cdouble(name, &naxis_data, z, units, cart_name, NULL, long_name, direction, 
+
+    id_z = cFMS_diag_axis_init_cdouble(name, &naxis_data, z, units, cart_name, NULL, long_name, direction,
                                        set_name, edges, aux, req, tile_count, domain_position, &not_xy);
   }
-  
+
   // register_diag_field var3
   {
     char module_name[NAME_LENGTH] = "atm_mod";
@@ -167,23 +174,10 @@ int main()
     bool *multiple_send_data = NULL;
 
     char err_msg[MESSAGE_LENGTH]="None";
-    
-    int year = 2;
-    int month = 1;
-    int day = 1;
-    int hour = 1;
-    int minute = 1;
-    int second = 1;
-    int *tick = NULL;
-    
-    cFMS_diag_set_field_init_time(&year, &month, &day, &hour, &minute, &second, tick, err_msg);
-    id_var3 = cFMS_register_diag_field_array_cfloat(module_name, field_name, axes, long_name, units, &missing_value, range,
+
+    id_var3 = cFMS_register_diag_field_array_cfloat(module_name, field_name, axes, long_name, units, time_init, &missing_value, range,
                                                     mask_variant, standard_name, verbose, do_not_log, err_msg, interp_method,
                                                     tile_count, area, volume, realm, multiple_send_data);
-    int ddays = 0;
-    int dseconds = 60*60;
-    int dticks = 0;
-    cFMS_diag_set_field_timestep(&id_var3, &dseconds, &ddays, &dticks,  NULL);
   }
 
   // register_diag_field var2
@@ -207,40 +201,26 @@ int main()
     bool *multiple_send_data = NULL;
 
     char err_msg[MESSAGE_LENGTH]="None";
-    
-    int year = 2;
-    int month = 1;
-    int day = 1;
-    int hour = 1;
-    int minute = 1;
-    int second = 1;
-    int *tick = NULL;
-    
-    cFMS_diag_set_field_init_time(&year, &month, &day, &hour, &minute, &second, tick, err_msg);
-    id_var2 = cFMS_register_diag_field_array_cfloat(module_name, field_name, axes, long_name, units, &missing_value, range,
+
+    id_var2 = cFMS_register_diag_field_array_cfloat(module_name, field_name, axes, long_name, units, time_init, &missing_value, range,
                                                     mask_variant, standard_name, verbose, do_not_log, err_msg, interp_method,
                                                     tile_count, area, volume, realm, multiple_send_data);
-    int ddays = 0;
-    int dseconds = 60*60;
-    int dticks = 0;
-    cFMS_diag_set_field_timestep(&id_var2, &dseconds, &ddays, &dticks,  NULL);
   }
 
-  
-  // cFMS_diag_set_time_end
-  {
-    int year = 2;
-    int month = 1;
-    int day = 2;
-    int hour = 1;
-    int minute = 1;
-    int second = 1;
-    int *tick = NULL;
-    cFMS_diag_set_time_end(&year, &month, &day, &hour, &minute, &second, tick, NULL);    
-  }
+  // set end time
+  int time_end[7] = {2,1,2,1,1,1,0 }; // 1/2/2 01:01:01
+  cFMS_diag_set_time_end(time_end, NULL);
 
   // send_data
-  for(int itime=0; itime<24; itime++) {    
+  int* curr_time = time_init;
+  for(int itime=0; itime<24; itime++) {
+
+    curr_time[HOUR]++;
+    if(curr_time[HOUR] == 24){
+      curr_time[HOUR] = 0;
+      curr_time[DAY]++;
+    }
+
     int ijk = 0;
     for(int i=0; i<NX; i++){
       for(int j=0; j<NY; j++){
@@ -250,9 +230,7 @@ int main()
         }
       }
     }
-    cFMS_diag_advance_field_time(&id_var3);
-    cFMS_diag_send_data_3d_cfloat(&id_var3, var3_shape, var3, NULL, NULL);
-    cFMS_diag_send_complete(&id_var3, NULL);
+    cFMS_diag_send_data_3d_cfloat(&id_var3, var3_shape, var3, NULL, NULL, curr_time);
 
     int ij = 0;
     for(int i=0; i<NX; i++){
@@ -261,15 +239,15 @@ int main()
         ij++;
       }
     }
-    cFMS_diag_advance_field_time(&id_var2);
-    cFMS_diag_send_data_2d_cfloat(&id_var2, var2_shape, var2, NULL, NULL);
-    cFMS_diag_send_complete(&id_var2, NULL);    
+    cFMS_diag_send_data_2d_cfloat(&id_var2, var2_shape, var2, NULL, NULL, curr_time);
+
+    cFMS_diag_send_complete(curr_time, NULL);
   }
 
-  cFMS_diag_end();
-  
+  cFMS_diag_end(time_end);
+
   cFMS_end();
   return EXIT_SUCCESS;
-  
+
 }
-  
+

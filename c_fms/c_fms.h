@@ -234,4 +234,6 @@ extern void cFMS_v_update_domains_float_5d(int* fieldx_shape, float* fieldx, int
 extern int cFMS_define_cubic_mosaic(int* ni, int* nj, int* global_indices, int* layout, int* ntiles,
   int* halo, bool* use_memsize);
 
+enum FmsTimes { YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, TICK};
+
 #endif

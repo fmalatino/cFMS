@@ -5,7 +5,7 @@
 #define CFMS_DIAG_AXIS_INIT_BINDC_ "cFMS_diag_axis_init_cfloat"
 #define CFMS_AXIS_DATA_KIND_        c_float
 #include "c_diag_axis_init.inc"
-  
+
 #undef  CFMS_DIAG_AXIS_INIT_
 #undef  CFMS_DIAG_AXIS_INIT_BINDC_
 #undef  CFMS_AXIS_DATA_KIND_
