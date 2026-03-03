@@ -45,20 +45,17 @@ if(NOT CMAKE_Fortran_COMPILER_ID MATCHES "^(Intel|GNU|IntelLLVM)$")
 endif()
 
 # Find dependencies
-FetchContent_Declare(
-    FMS
-    GIT_REPOSITORY https://github.com/NOAA-GFDL/FMS.git
-    GIT_TAG fbbe8f6abaae0b307951c023b408b37a45f806cb
-)
-FetchContent_MakeAvailable(FMS)
-# add_subdirectory(FMS)
 
-list(APPEND CMAKE_MODULE_PATH ${FMS_SOURCE_DIR}/cmake)
+# FetchContent_Declare(
+#     FMS
+#     GIT_REPOSITORY https://github.com/NOAA-GFDL/FMS.git
+#     GIT_TAG fbbe8f6abaae0b307951c023b408b37a45f806cb
+# )
+# FetchContent_MakeAvailable(FMS)
+add_subdirectory(FMS)
 
-# Append directory that contains CMake Modules for building FMS and cFMS
-# list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/FMS/cmake)
-
-# set(TARGET_NAME libcFMS)
+# list(APPEND CMAKE_MODULE_PATH ${FMS_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/FMS/cmake)
 
 list(APPEND cfms_src_files
   c_constants/c_constants.F90
@@ -93,8 +90,8 @@ target_include_directories(cFMS PRIVATE
   c_fms/include
   c_fms_utils/include
   c_horiz_interp/include
-#   FMS/include
-  ${CMAKE_SOURCE_DIR}/FMS/include
+  FMS/include
+  # ${CMAKE_SOURCE_DIR}/FMS/include
 )
 
 install(TARGETS cFMS
