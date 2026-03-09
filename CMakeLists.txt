@@ -54,9 +54,6 @@ endif()
 # FetchContent_MakeAvailable(FMS)
 add_subdirectory(FMS)
 
-# list(APPEND CMAKE_MODULE_PATH ${FMS_SOURCE_DIR}/cmake)
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/FMS/cmake)
-
 list(APPEND cfms_src_files
   c_constants/c_constants.F90
   c_data_override/c_data_override.F90
@@ -82,6 +79,7 @@ add_library(cFMS SHARED
 
 target_link_libraries(cFMS PUBLIC
   FMS::fms
+  ${LIBYAML_LIBRARIES}
 )
 
 target_include_directories(cFMS PRIVATE
@@ -99,9 +97,5 @@ install(TARGETS cFMS
 )
 install(FILES ${cfms_header_files}
     DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
-
-
-
-
 
 
