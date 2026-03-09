@@ -98,4 +98,8 @@ install(TARGETS cFMS
 install(FILES ${cfms_header_files}
     DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 
+# Tests
+
+
+
 
