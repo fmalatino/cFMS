@@ -21,6 +21,7 @@ cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 # Build options
 option(PORTABLE_KINDS "Enable compiler defition -DPORTABLE_KINDS" ON)
 option(WITH_YAML "Enable compiler definition -Duse_yaml" ON)
+option(CFMS_TESTS "Enable compiling of test scripts" OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(FetchContent)
@@ -99,7 +100,9 @@ install(FILES ${cfms_header_files}
     DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 
 # Tests
-
+if(CFMS_TESTS)
+    add_subdirectory(test_cfms)
+endif()
 
 
 

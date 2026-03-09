@@ -1,0 +1,6 @@
+add_subdirectory(c_data_override)
+add_subdirectory(c_diag_manager)
+# add_subdirectory(c_fms)
+# add_subdirectory(c_fms_utils)
+add_subdirectory(c_grid_utils)
+add_subdirectory(c_horiz_interp)
