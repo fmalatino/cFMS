@@ -30,7 +30,7 @@ jobs:
       run: |
         export FC="mpifort"
         export CC="mpicc"
-        export CFLAGS = "-g -O0"
+        export CFLAGS="-g -O0"
         export FCFLAGS="-g -O0 -W -fbacktrace -fbounds-check -fbacktrace -ffpe-trap=invalid,zero,overflow"
         cmake -B build -DCFMS_TESTS=ON
         cmake --build build
