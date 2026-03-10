@@ -22,6 +22,7 @@ jobs:
         submodules: 'recursive'
     - name: test
       run: |
+        echo "`nc-config --cflags`"
         export FC="mpifort"
         export CC="mpicc"
         export CFLAGS="`nc-config --cflags`"
