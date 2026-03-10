@@ -23,7 +23,7 @@ jobs:
     - name: install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install netcdf-bin libnetcdf-dev libnetcdff-dev libyaml-dev
+        sudo apt-get install netcdf-bin libnetcdf-dev libnetcdff-dev libyaml-dev -qq mpich libmpich-dev
     - name: test
       run: |
         export FC="mpifort"
