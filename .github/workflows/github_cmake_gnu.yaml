@@ -23,7 +23,7 @@ jobs:
     - name: install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y libnetcdf-dev lib netcdff-dev libhdf5-dev
+        sudo apt-get install -y libnetcdf-dev libnetcdff-dev libhdf5-dev
         sudo apt-get install -y -qq mpich libmpich-dev
         sudo apt-get install -y libyaml-dev
     - name: test
