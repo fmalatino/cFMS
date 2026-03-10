@@ -21,4 +21,9 @@ jobs:
       with:
         submodules: 'recursive'
     - name: test
-      run: cmake -B build -DCFMS_TESTS=ON
+      run: |
+        export FC="mpifort"
+        export CC="mpicc"
+        export CFLAGS="`nc-config --cflags`"
+        export FCFLAGS="`nf-config --fflags`"
+        cmake -B build -DCFMS_TESTS=ON
