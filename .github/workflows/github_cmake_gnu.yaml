@@ -31,3 +31,4 @@ jobs:
         export FC="mpifort"
         export CC="mpicc"
         cmake -B build -DCFMS_TESTS=ON
+        cmake --build build
