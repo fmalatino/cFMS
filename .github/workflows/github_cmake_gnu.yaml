@@ -11,24 +11,20 @@ concurrency:
 jobs:
   cmake_install:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/noaa-gfdl/fms/fms-ci-rocky-gnu:13.2.0
+      env:
+        PKG_CONFIG_PATH: "/opt/views/view/lib64/pkgconfig:/opt/views/view/lib/pkgconfig:/opt/views/view/share/pkgconfig"
     steps:
     - name: checkout code
       uses: actions/checkout@v4
       with:
         submodules: 'recursive'
-    - name: Setup CMake
-      uses: jwlawson/actions-setup-cmake@v2
-      with:
-        cmake-version: '3.25.x'
-    - name: install dependencies
+    - name: Generate makefiles with CMake
       run: |
-        sudo apt-get update
-        sudo apt-get install netcdf-bin libnetcdf-dev libnetcdff-dev libyaml-dev -qq mpich libmpich-dev
-    - name: test
-      run: |
-        export FC="mpifort"
-        export CC="mpicc"
-        export CFLAGS="-g -O0"
-        export FCFLAGS="-g -O0 -W -fbacktrace -fbounds-check -fbacktrace -ffpe-trap=invalid,zero,overflow"
-        cmake -B build -DCFMS_TESTS=ON
-        cmake --build build
+        cmake -B build -DCFMS_TESTS=on -DNetCDF_ROOT=/opt/view -DLIBYAML_ROOT=/opt/view
+    - name: Build library and tests
+      run: make -C build
+    - name: Run tests
+      run: cd build && ctest --output-on-failure
+        
