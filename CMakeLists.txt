@@ -47,13 +47,12 @@ endif()
 
 # Find dependencies
 
-# FetchContent_Declare(
-#     FMS
-#     GIT_REPOSITORY https://github.com/NOAA-GFDL/FMS.git
-#     GIT_TAG 043ab2f6037af92997aa72a467430e95c03652ae
-# )
-# FetchContent_MakeAvailable(FMS)
-add_subdirectory(FMS)
+FetchContent_Declare(
+    FMS
+    GIT_REPOSITORY https://github.com/NOAA-GFDL/FMS.git
+    GIT_TAG 043ab2f6037af92997aa72a467430e95c03652ae
+)
+FetchContent_MakeAvailable(FMS)
 
 list(APPEND cfms_src_files
   c_constants/c_constants.F90
@@ -89,7 +88,6 @@ target_include_directories(cFMS PRIVATE
   c_fms/include
   c_fms_utils/include
   c_horiz_interp/include
-#   FMS/include
   ${CMAKE_CURRENT_SOURCE_DIR}/FMS/include
 )
 
